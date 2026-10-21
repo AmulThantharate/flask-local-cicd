@@ -9,6 +9,11 @@ pipeline {
        )
     }
     
+    environment {
+      DOCKER_USE = secrets.DOCKER_USER
+      DOCKER_PASSWORD = credentials('docker-cred')
+    }
+
     stages {
         stage("Git Checkout") {
           steps {
@@ -55,6 +60,18 @@ pipeline {
           }
         }
 
-  }
+        stage("Docker Push") {
+           steps {
+             withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_CRED', usernameVariable: 'DOCKER_USER')]) {
+               sh """
+                   docker build -t ${env.DOCKER_USERNAME}/flask-local-cicd:${env.BUILD_NUMBER} .
+                   docker login -u ${env.DOCKER_USERNAME} -p ${env.DOCKER_PASSWORD}
+                   docker push ${env.DOCKER_USERNAME}/flask-local-cicd:${env.BUILD_NUMBER}
+               """
+             }
+           }
+         }
+        }
+
 }
 
