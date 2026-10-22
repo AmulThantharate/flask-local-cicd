@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters{
+      choices(
+        name: 'ENVIRONMENT',
+        choices: ['dev', 'staging', 'prod'],
+        description: 'Choose an environment to deploy'
+      )
+    }
+
     stages {
         stage('Checkout Source Code') {
             steps {
@@ -30,5 +38,17 @@ pipeline {
                 }
             }
         }
+
+        stage("Run Tests"){
+            steps {
+                script {
+                  sh """"
+                      . venv/bin/activate
+                      python3 -m pytest -v test/test_app.py
+                  """
+                }
+            }
+        }
+
     }
 }
