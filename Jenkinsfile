@@ -19,7 +19,7 @@ pipeline {
         stage("Commit Message SHA"){
             steps {
               script {
-                env.COMMIT_SHA = sh(script: "git rev-parse --short=7 HEAD", 
+                env.COMMIT_SHA = sh(script: "git rev-parse --short=7 HEAD",
                   returnStdout: true
                 ).trim()
               }
@@ -42,7 +42,7 @@ pipeline {
         stage("Run Tests"){
             steps {
                 script {
-                  sh """"
+                  sh """
                       . venv/bin/activate
                       python3 -m pytest -v test/test_app.py
                   """
@@ -50,5 +50,27 @@ pipeline {
             }
         }
 
+        stage("Env to deploy"){
+            steps{
+              script {
+                def applicationName = "flask-local-cicd-demo"
+                def applicationVersion = "v1.0.1"
+                def environment = params.ENVIRONMENT
+
+                echo "Application: ${applicationName}"
+                echo "application: ${applicationVersion}"
+
+                if(environment == dev){
+                  println "Deploying on dev"
+                } else (environment == staging) {
+                  println "Deploying on staging"
+                } else (environment == prod) {
+                  println "Deploying to prod"
+                } else {
+                  println "Invalid Environment ${environment}"
+                }
+              }
+            }
+        }
     }
 }
