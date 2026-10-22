@@ -60,11 +60,11 @@ pipeline {
                 echo "Application: ${applicationName}"
                 echo "application: ${applicationVersion}"
 
-                if(environment == dev){
+                if(environment == "dev"){
                   println "Deploying on dev"
-                } else (environment == staging) {
+                } else if (environment == "staging") {
                   println "Deploying on staging"
-                } else (environment == prod) {
+                } else if (environment == "prod") {
                   println "Deploying to prod"
                 } else {
                   println "Invalid Environment ${environment}"
